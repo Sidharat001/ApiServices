@@ -4,14 +4,14 @@ const bcrypt = require('bcrypt');
 class User {
     static async createUser(username, email, password, name) {
         try {
-            let hashPassword = await bcrypt.hash(password, 10)
+            const hashPassword = await bcrypt.hash(password, 10); // Hash the password
+            const query = 'INSERT INTO users (username, email, name, password) VALUES (?, ?, ?, ?)';
             const result = await new Promise((resolve, reject) => {
-                mysqlCon.query('INSERT INTO users (username, email, name, password) VALUES (?, ?, ?, ?)', [username, email, name, hashPassword], function (error, result) {
+                mysqlCon.query(query, [username, email, name, hashPassword], function (error, result) {
                     if (error) reject(error);
                     resolve(result);
                 });
             });
-            console.log(result)
             return result;
         } catch (error) {
             throw error;
@@ -20,9 +20,9 @@ class User {
 
     static async getUserByEmail(email) {
         try {
-            const getUserByEmail = `SELECT * FROM users WHERE email = '${email}'`;
+            const query = 'SELECT * FROM users WHERE email = ?';
             const result = await new Promise((resolve, reject) => {
-                mysqlCon.query(getUserByEmail, function (err, result) {
+                mysqlCon.query(query, [email], function (err, result) {
                     if (err) reject(err);
                     resolve(result);
                 });
